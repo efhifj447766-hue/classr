@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Classroom Hub – รวมงานทุกวิชา</title>
+<meta name="theme-color" content="#1b1464">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Classroom Hub">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="hero" id="hero">
+  <div class="hero-pin">
+    <p class="hero-top">Classroom Hub</p>
+    <h1 class="hero-title"><span>งาน</span><span>ทุกวิชา</span><span>ที่ต้องส่ง</span></h1>
+    <div class="hero-count"><b id="heroCount">0</b><small>งานยังไม่ส่ง</small></div>
+    <div class="hero-actions">
+      <button class="btn" id="btnConnect">เชื่อมต่อ Google Classroom</button>
+      <button class="btn ghost" id="btnDemo">ดูข้อมูลตัวอย่าง</button>
+      <button class="btn ghost" id="btnInstall" hidden>ติดตั้งแอป</button>
+    </div>
+    <p class="hint" id="status">กำลังใช้ข้อมูลตัวอย่าง</p>
+    <p class="hint" id="iosHint" hidden>ติดตั้งบน iPad: กดปุ่มแชร์ใน Safari แล้วเลือก "เพิ่มไปยังหน้าจอโฮม"</p>
+    <div class="scroll-cue">เลื่อนลง</div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true"><div id="marquee"></div></div>
+
+<section class="toolbar" id="toolbar">
+  <input type="search" id="q" placeholder="ค้นหาชื่องาน / วิชา / ไฟล์">
+  <button class="btn small" id="btnFilters" aria-expanded="false" aria-controls="filters">ตัวกรอง</button>
+  <div class="filters" id="filters" role="dialog" aria-label="ตัวกรอง">
+  <div class="sheet-head"><b>ตัวกรองและเรียงลำดับ</b><button type="button" class="btn small" id="btnDone">ดูผลลัพธ์</button></div>
+  <label>วิชา <select id="fSubject"><option value="all">ทั้งหมด</option></select></label>
+  <label>สถานะ <select id="fStatus">
+    <option value="all">ทั้งหมด</option><option value="open">ยังไม่หมดเวลา</option>
+    <option value="overdue">หมดเวลาแล้ว</option><option value="done">ส่งแล้ว</option></select></label>
+  <label>ไฟล์ <select id="fFiles"><option value="all">ทั้งหมด</option><option value="yes">มีไฟล์แนบ</option><option value="no">ไม่มีไฟล์</option></select></label>
+  <label>เรียง <select id="fSort">
+    <option value="due-asc">กำหนดส่ง: ใกล้ → ไกล</option><option value="due-desc">กำหนดส่ง: ไกล → ใกล้</option>
+    <option value="subject">ชื่อวิชา ก-ฮ</option><option value="title">ชื่องาน ก-ฮ</option></select></label>
+  <button type="button" class="btn small ghost" id="btnReset">ล้างตัวกรอง</button>
+  <span class="result" id="result"></span>
+  </div>
+</section>
+<div class="backdrop" id="backdrop"></div>
+
+<main id="boxes">
+  <section class="box box-open" data-box="open">
+    <div class="box-head"><h2>ยังไม่<br>หมดเวลา</h2><span class="big" data-count>0</span></div>
+    <div class="grid"></div>
+  </section>
+  <section class="box box-overdue" data-box="overdue">
+    <div class="box-head"><h2>หมดเวลา<br>แล้ว</h2><span class="big" data-count>0</span></div>
+    <div class="grid"></div>
+  </section>
+  <section class="box box-done" data-box="done">
+    <div class="box-head"><h2>ส่ง<br>แล้ว</h2><span class="big" data-count>0</span></div>
+    <div class="grid"></div>
+  </section>
+</main>
+
+<footer class="foot"><p>Classroom Hub · ข้อมูลอ่านอย่างเดียวจาก Google Classroom ของคุณ</p>
+<button class="btn ghost small" id="btnSettings">ตั้งค่า Client ID</button></footer>
+
+<dialog id="dlg">
+  <form method="dialog">
+    <h3>ตั้งค่าการเชื่อมต่อ</h3>
+    <p>ใส่ OAuth Client ID (Web application) จาก Google Cloud Console ที่เปิดใช้ Google Classroom API แล้ว และเพิ่ม URL ของเว็บนี้ใน Authorized JavaScript origins</p>
+    <input id="clientId" placeholder="xxxxxxxx.apps.googleusercontent.com">
+    <menu><button value="cancel" class="btn ghost small">ยกเลิก</button><button value="ok" class="btn small" id="saveId">บันทึก</button></menu>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
