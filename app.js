@@ -3,7 +3,7 @@ const SCOPES='https://www.googleapis.com/auth/classroom.courses.readonly https:/
 const API='https://classroom.googleapis.com/v1';
 let tasks=[],tokenClient=null,accessToken=null,deferredInstall=null;
 const F={q:'',subject:'all',status:'all',files:'all',sort:'due-asc'};
-const COLORS=['#ffd1e8','#c9f7ef','#fff0a3','#d7d0ff','#ffd9b8','#c8e6ff'];
+const COLORS=['#e1ebe6','#efe6d3','#e2e7ef','#efe1e4','#e7e2ee','#e5ecd6'];
 const hue=s=>COLORS[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
 const dayMs=864e5;
 
@@ -111,7 +111,7 @@ function card(t){
   const s=statusOf(t),c=el('article','card');
   const top=el('div','row');
   const sj=el('span','subj',t.subject);sj.style.setProperty('--c',hue(t.subject));
-  top.append(sj,el('span','badge',LABEL[s]+(t.late&&s==='done'?' (ช้า)':'')));
+  top.append(sj,el('span','badge '+s,LABEL[s]+(t.late&&s==='done'?' (ช้า)':'')));
   const due=el('p','due');due.append(el('b',null,fmt(t.due)));if(s!=='done')due.append(el('small',null,rel(t.due)));
   c.append(top,el('h3',null,t.title),due);
   if(t.files.length){
@@ -136,10 +136,11 @@ function render(){
     g.forEach(t=>{const c=card(t);grid.append(c);io.observe(c)});
     if(!g.length)$('.empty',grid).style.opacity=1;
   });
+  filterBadge();
   $('#result').textContent=`แสดง ${list.length} จาก ${tasks.length} งาน`;
   $('#heroCount').textContent=tasks.filter(t=>statusOf(t)!=='done').length;
   const subs=[...new Set(tasks.map(t=>t.subject))];
-  $('#marquee').textContent=(subs.join('  ✦  ')+'  ✦  ').repeat(4);
+  $('#marquee').textContent=(subs.join('    —    ')+'    —    ').repeat(4);
 }
 function fillSubjects(){
   const sel=$('#fSubject');sel.replaceChildren(new Option('ทั้งหมด','all'));
@@ -160,7 +161,12 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;
 $('#btnInstall').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#btnInstall').hidden=true};
 
 /* ---------- มือถือ / แท็บเล็ต ---------- */
-$('#btnFilters').onclick=e=>{const o=$('#filters').classList.toggle('show');e.target.setAttribute('aria-expanded',o);e.target.textContent=o?'ซ่อนตัวกรอง':'ตัวกรอง'};
+function setFilters(o){$('#filters').classList.toggle('show',o);$('#backdrop').classList.toggle('show',o);document.body.classList.toggle('lock',o&&innerWidth<=900);$('#btnFilters').setAttribute('aria-expanded',o)}
+$('#btnFilters').onclick=()=>setFilters(!$('#filters').classList.contains('show'));
+$('#btnDone').onclick=$('#backdrop').onclick=()=>setFilters(false);
+addEventListener('keydown',e=>{if(e.key==='Escape')setFilters(false)});
+addEventListener('resize',()=>{if(innerWidth>900)setFilters(false)});
+function filterBadge(){const n=['subject','status','files'].filter(k=>F[k]!=='all').length+(F.sort!=='due-asc'?1:0);$('#btnFilters').textContent=n?`ตัวกรอง (${n})`:'ตัวกรอง'}
 const tb=$('#toolbar');
 new ResizeObserver(()=>document.documentElement.style.setProperty('--tb',tb.offsetHeight+'px')).observe(tb);
 const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
